@@ -1,8 +1,16 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latest = posts[0];
+const rest = posts.slice(1, 4);
 ---
 
 <!doctype html>
@@ -13,37 +21,167 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<section class="hero">
+				<p class="kicker">Daily China Signals</p>
+				<h1>Chinese social trends, decoded for the outside world.</h1>
+				<p class="lede">
+					China Unlocked turns domestic signals from Douyin, Weibo, Xiaohongshu, and Chinese news
+					cycles into concise English briefings for founders, creators, analysts, and curious readers.
+				</p>
+			</section>
+
+			{
+				latest && (
+					<section class="latest">
+						<div class="section-label">Latest Brief</div>
+						<a href={`/blog/${latest.id}/`} class="lead-story">
+							<div>
+								<p class="date"><FormattedDate date={latest.data.pubDate} /></p>
+								<h2>{latest.data.title}</h2>
+								<p>{latest.data.description}</p>
+							</div>
+							<span>Read brief</span>
+						</a>
+					</section>
+				)
+			}
+
+			<section class="signal-grid">
+				<div>
+					<h2>What We Track</h2>
+					<p>Platform-native signals before they flatten into generic headlines.</p>
+				</div>
+				<ul>
+					<li><strong>Douyin</strong><span>Short-video trends and mass attention spikes.</span></li>
+					<li><strong>Weibo</strong><span>Mainstream discourse, celebrity cycles, and public mood.</span></li>
+					<li><strong>Xiaohongshu</strong><span>Lifestyle, shopping, travel, and consumer intent.</span></li>
+				</ul>
+			</section>
+
+			{
+				rest.length > 0 && (
+					<section class="more">
+						<div class="section-label">Recent Archive</div>
+						{rest.map((post) => (
+							<a href={`/blog/${post.id}/`}>
+								<span>{post.data.title}</span>
+								<FormattedDate date={post.data.pubDate} />
+							</a>
+						))}
+					</section>
+				)
+			}
 		</main>
 		<Footer />
 	</body>
 </html>
+<style>
+	main {
+		width: min(1120px, calc(100% - 2rem));
+		padding: 4rem 0;
+	}
+	.hero {
+		border-bottom: 1px solid rgba(var(--ink), 12%);
+		padding-bottom: 3rem;
+	}
+	.kicker,
+	.section-label,
+	.date {
+		color: var(--accent);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	.hero h1 {
+		max-width: 900px;
+		font-size: clamp(2.5rem, 7vw, 6.4rem);
+		line-height: 0.95;
+		margin: 0.4rem 0 1.5rem;
+	}
+	.lede {
+		max-width: 760px;
+		font-size: 1.2rem;
+		color: rgb(var(--muted));
+	}
+	.latest,
+	.signal-grid,
+	.more {
+		margin-top: 3rem;
+	}
+	.lead-story {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 2rem;
+		align-items: end;
+		border: 1px solid rgba(var(--ink), 14%);
+		border-radius: 8px;
+		padding: 2rem;
+		color: rgb(var(--ink));
+		text-decoration: none;
+	}
+	.lead-story h2 {
+		font-size: clamp(2rem, 4vw, 4rem);
+		margin: 0 0 1rem;
+	}
+	.lead-story p {
+		max-width: 720px;
+		color: rgb(var(--muted));
+	}
+	.lead-story span {
+		border: 1px solid rgba(var(--ink), 20%);
+		padding: 0.65rem 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-size: 0.8rem;
+	}
+	.signal-grid {
+		display: grid;
+		grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+		gap: 2rem;
+	}
+	.signal-grid ul {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.signal-grid li {
+		border-top: 3px solid var(--accent);
+		background: rgb(var(--paper-strong));
+		padding: 1rem;
+	}
+	.signal-grid span {
+		display: block;
+		margin-top: 0.75rem;
+		color: rgb(var(--muted));
+		font-size: 0.95rem;
+	}
+	.more {
+		border-top: 1px solid rgba(var(--ink), 12%);
+	}
+	.more a {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		border-bottom: 1px solid rgba(var(--ink), 12%);
+		padding: 1rem 0;
+		color: rgb(var(--ink));
+		text-decoration: none;
+	}
+	@media (max-width: 760px) {
+		main {
+			padding: 2.5rem 0;
+		}
+		.lead-story,
+		.signal-grid,
+		.signal-grid ul {
+			grid-template-columns: 1fr;
+		}
+		.more a {
+			flex-direction: column;
+		}
+	}
+</style>
