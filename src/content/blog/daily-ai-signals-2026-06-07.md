@@ -1,7 +1,7 @@
 ---
 title: "Why 10.9 Million Searches Took Over China's Internet Today"
 description: "China's biggest online story today was an exam panic, not geopolitics: the gaokao shows how family pressure becomes mass attention."
-pubDate: 2026-06-07
+pubDate: 2026-06-07T20:53:59Z
 ---
 
 # China Signals Daily - 2026-06-07
